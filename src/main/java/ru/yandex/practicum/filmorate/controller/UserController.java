@@ -25,16 +25,7 @@ public class UserController {
     @PostMapping
     public User addUser(@Valid @RequestBody User user) {
         log.info("Попытка добавить нового пользователя");
-        if (user.getEmail().isEmpty() || user.getEmail().isBlank()) {
-            printException("Электронная почта не может быть пустой");
-        }
-        if (!user.getEmail().contains("@")) {
-            printException("Имейл должен содержать символ '@'");
-        }
 
-        if (user.getLogin().isEmpty() || user.getLogin().isBlank()) {
-            printException("Логин не может быть пустым");
-        }
         if (user.getLogin().contains(" ")) {
             printException("Логин не может содержать пробелы");
         }
@@ -56,18 +47,23 @@ public class UserController {
     }
 
     @PutMapping
-    public User updateFilm(@Valid @RequestBody User newUser) {
+    public User updateFilm(@RequestBody User newUser) {
         log.info("Попытка изменить пользователя");
-        System.out.println(newUser);
+
         if (newUser.getId() == null) {
             printException("Id не может быть пустым");
         }
 
         if (users.containsKey(newUser.getId())) {
             User oldUser = users.get(newUser.getId());
-            System.out.println(oldUser);
+
             if (!newUser.getEmail().isEmpty() && !newUser.getEmail().isBlank()) {
-                //если я исполь
+                //можно ли как то проверить только поле email у newUser, не проверяя остальные поля?
+                //ии предлагает делать через интерфейсы-маркеры
+//                public class ValidationGroups {
+//                    public interface Create {}
+//                    public interface Update {}
+//                }
                 if (!newUser.getEmail().contains("@")) {
                     printException("Имейл должен содержать символ '@'");
                 }
