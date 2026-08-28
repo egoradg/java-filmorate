@@ -34,10 +34,6 @@ public class UserController {
             user.setName(user.getLogin());
         }
 
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            printException("Дата рождения не может быть в будущем");
-        }
-
         user.setId(getNextId());
 
         users.put(user.getId(), user);
