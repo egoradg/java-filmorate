@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -22,7 +23,7 @@ public class UserController {
     }
 
     @PostMapping
-    public User addUser(@RequestBody User user) {
+    public User addUser(@Valid @RequestBody User user) {
         log.info("Попытка добавить нового пользователя");
         if (user.getEmail().isEmpty() || user.getEmail().isBlank()) {
             printException("Электронная почта не может быть пустой");
@@ -55,19 +56,22 @@ public class UserController {
     }
 
     @PutMapping
-    public User updateFilm(@RequestBody User newUser) {
+    public User updateFilm(@Valid @RequestBody User newUser) {
         log.info("Попытка изменить пользователя");
+        System.out.println(newUser);
         if (newUser.getId() == null) {
             printException("Id не может быть пустым");
         }
 
         if (users.containsKey(newUser.getId())) {
             User oldUser = users.get(newUser.getId());
+            System.out.println(oldUser);
             if (!newUser.getEmail().isEmpty() && !newUser.getEmail().isBlank()) {
+                //если я исполь
                 if (!newUser.getEmail().contains("@")) {
                     printException("Имейл должен содержать символ '@'");
                 }
-                oldUser.setName(newUser.getName());
+                oldUser.setEmail(newUser.getEmail());
             }
 
             if (!newUser.getLogin().isEmpty() && !newUser.getLogin().isBlank()) {
@@ -77,6 +81,10 @@ public class UserController {
                 oldUser.setLogin(newUser.getLogin());
             }
 
+            if (!newUser.getName().isEmpty() && !newUser.getName().isBlank()) {
+                oldUser.setName(newUser.getName());
+            }
+
             if (newUser.getBirthday() != null) {
                 if (newUser.getBirthday().isAfter(LocalDate.now())) {
                     printException("дата рождения не может быть в будущем");
@@ -84,6 +92,7 @@ public class UserController {
                 oldUser.setBirthday(newUser.getBirthday());
             }
             log.info("Данные пользователя успешно изменены");
+            System.out.println(oldUser);
             return oldUser;
         }
 
