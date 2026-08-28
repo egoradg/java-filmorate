@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -11,6 +12,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/films")
+@Slf4j
 public class FilmController {
     private final Map<Long, Film> films = new HashMap<>();
 
@@ -21,34 +23,35 @@ public class FilmController {
 
     @PostMapping
     public Film addFilm(@RequestBody Film film) {
+        log.info("Попытка добавить новый фильм");
         if (film.getName().isEmpty() || film.getName().isBlank()) {
-            throw new ValidationException("Название не может быть пустым");
+            printException("Название не может быть пустым");
         }
 
         if (film.getDescription().length() > 200) {
-            throw new ValidationException("Максимальная длина описания — 200 символов");
+            printException("Максимальная длина описания — 200 символов");
         }
 
         if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            throw new ValidationException("Дата релиза — не раньше 28 декабря 1895 года");
+            printException("Дата релиза — не раньше 28 декабря 1895 года");
         }
 
         if (film.getDuration().toMinutes() < 0) {
-            throw new ValidationException("Продолжительность фильма должна быть положительным числом");
+            printException("Продолжительность фильма должна быть положительным числом");
         }
 
         film.setId(getNextId());
-
         films.put(film.getId(), film);
+        log.info("Добавлен новый фильм");
 
         return film;
     }
 
     @PutMapping
     public Film updateFilm(@RequestBody Film newFilm) {
-
+        log.info("Попытка изменить фильм");
         if (newFilm.getId() == null) {
-            throw new ValidationException("Id не может быть пустым");
+            printException("Id не может быть пустым");
         }
 
         if (films.containsKey(newFilm.getId())) {
@@ -59,27 +62,29 @@ public class FilmController {
 
             if (!newFilm.getDescription().isEmpty() && !newFilm.getDescription().isBlank()) {
                 if (newFilm.getDescription().length() > 200) {
-                    throw new ValidationException("Максимальная длина описания — 200 символов");
+                    printException("Максимальная длина описания — 200 символов");
                 }
                 oldFilm.setDescription(newFilm.getDescription());
             }
 
             if (newFilm.getReleaseDate() != null) {
                 if (newFilm.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-                    throw new ValidationException("Дата релиза — не раньше 28 декабря 1895 года");
+                    printException("Дата релиза — не раньше 28 декабря 1895 года");
                 }
                 oldFilm.setReleaseDate(newFilm.getReleaseDate());
             }
 
             if (newFilm.getDuration() != null) {
                 if (newFilm.getDuration().toMinutes() < 0) {
-                    throw new ValidationException("Продолжительность фильма должна быть положительным числом");
+                    printException("Продолжительность фильма должна быть положительным числом");
                 }
                 oldFilm.setDuration(newFilm.getDuration());
             }
+
+            log.info("Данные фильма успешно изменены");
             return oldFilm;
         }
-
+        log.warn("Фильма с id = " + newFilm.getId() + " нет");
         throw new ValidationException("Фильма с id = " + newFilm.getId() + " нет");
     }
 
@@ -90,5 +95,10 @@ public class FilmController {
                 .max()
                 .orElse(0);
         return ++currentMaxId;
+    }
+
+    private void printException(String message) throws ValidationException {
+        log.warn(message);
+        throw new ValidationException(message);
     }
 }

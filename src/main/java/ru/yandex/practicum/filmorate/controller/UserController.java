@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -11,6 +12,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
+@Slf4j
 public class UserController {
     private final Map<Long, User> users = new HashMap<>();
 
@@ -21,18 +23,19 @@ public class UserController {
 
     @PostMapping
     public User addUser(@RequestBody User user) {
+        log.info("Попытка добавить нового пользователя");
         if (user.getEmail().isEmpty() || user.getEmail().isBlank()) {
-            throw new ValidationException("Электронная почта не может быть пустой");
+            printException("Электронная почта не может быть пустой");
         }
         if (!user.getEmail().contains("@")) {
-            throw new ValidationException("Имейл должен содержать символ '@'");
+            printException("Имейл должен содержать символ '@'");
         }
 
         if (user.getLogin().isEmpty() || user.getLogin().isBlank()) {
-            throw new ValidationException("Логин не может быть пустым");
+            printException("Логин не может быть пустым");
         }
         if (user.getLogin().contains(" ")) {
-            throw new ValidationException("Логин не может содержать пробелы");
+            printException("Логин не может содержать пробелы");
         }
 
         if (user.getName() == null) {
@@ -40,48 +43,51 @@ public class UserController {
         }
 
         if (user.getBirthday().isAfter(LocalDate.now())) {
-            throw new ValidationException("дата рождения не может быть в будущем");
+            printException("Дата рождения не может быть в будущем");
         }
 
         user.setId(getNextId());
 
         users.put(user.getId(), user);
+        log.info("Добавлен новый пользователь");
 
         return user;
     }
 
     @PutMapping
     public User updateFilm(@RequestBody User newUser) {
-
+        log.info("Попытка изменить пользователя");
         if (newUser.getId() == null) {
-            throw new ValidationException("Id не может быть пустым");
+            printException("Id не может быть пустым");
         }
 
         if (users.containsKey(newUser.getId())) {
             User oldUser = users.get(newUser.getId());
             if (!newUser.getEmail().isEmpty() && !newUser.getEmail().isBlank()) {
                 if (!newUser.getEmail().contains("@")) {
-                    throw new ValidationException("Имейл должен содержать символ '@'");
+                    printException("Имейл должен содержать символ '@'");
                 }
                 oldUser.setName(newUser.getName());
             }
 
             if (!newUser.getLogin().isEmpty() && !newUser.getLogin().isBlank()) {
                 if (newUser.getEmail().contains(" ")) {
-                    throw new ValidationException("Логин не может содержать пробелы");
+                    printException("Логин не может содержать пробелы");
                 }
                 oldUser.setLogin(newUser.getLogin());
             }
 
             if (newUser.getBirthday() != null) {
                 if (newUser.getBirthday().isAfter(LocalDate.now())) {
-                    throw new ValidationException("дата рождения не может быть в будущем");
+                    printException("дата рождения не может быть в будущем");
                 }
                 oldUser.setBirthday(newUser.getBirthday());
             }
+            log.info("Данные пользователя успешно изменены");
             return oldUser;
         }
 
+        log.warn("Пользователя с id = " + newUser.getId() + " нет");
         throw new ValidationException("Пользователя с id = " + newUser.getId() + " нет");
     }
 
@@ -92,5 +98,10 @@ public class UserController {
                 .max()
                 .orElse(0);
         return ++currentMaxId;
+    }
+
+    private void printException(String message) throws ValidationException {
+        log.warn(message);
+        throw new ValidationException(message);
     }
 }
