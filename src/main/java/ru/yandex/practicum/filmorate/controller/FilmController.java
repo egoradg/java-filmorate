@@ -15,25 +15,25 @@ public class FilmController {
     private final Map<Long, Film> films = new HashMap<>();
 
     @GetMapping
-    public Collection<Film> findAll(){
+    public Collection<Film> findAll() {
         return films.values();
     }
 
     @PostMapping
-    public Film addFilm(@RequestBody Film film){
-        if(film.getName().isEmpty() || film.getName().isBlank()){
+    public Film addFilm(@RequestBody Film film) {
+        if (film.getName().isEmpty() || film.getName().isBlank()) {
             throw new ValidationException("Название не может быть пустым");
         }
 
-        if(film.getDescription().length()>200){
+        if (film.getDescription().length() > 200) {
             throw new ValidationException("Максимальная длина описания — 200 символов");
         }
 
-        if(film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))){
+        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
             throw new ValidationException("Дата релиза — не раньше 28 декабря 1895 года");
         }
 
-        if(film.getDuration().toMinutes()<0){
+        if (film.getDuration().toMinutes() < 0) {
             throw new ValidationException("Продолжительность фильма должна быть положительным числом");
         }
 
@@ -45,34 +45,34 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film updateFilm(@RequestBody Film newFilm){
+    public Film updateFilm(@RequestBody Film newFilm) {
 
-        if(newFilm.getId()==null){
+        if (newFilm.getId() == null) {
             throw new ValidationException("Id не может быть пустым");
         }
 
-        if(films.containsKey(newFilm.getId())){
+        if (films.containsKey(newFilm.getId())) {
             Film oldFilm = films.get(newFilm.getId());
-            if(!newFilm.getName().isEmpty() && !newFilm.getName().isBlank()){
+            if (!newFilm.getName().isEmpty() && !newFilm.getName().isBlank()) {
                 oldFilm.setName(newFilm.getName());
             }
 
-            if(!newFilm.getDescription().isEmpty() && !newFilm.getDescription().isBlank()){
-                if(newFilm.getDescription().length()>200){
+            if (!newFilm.getDescription().isEmpty() && !newFilm.getDescription().isBlank()) {
+                if (newFilm.getDescription().length() > 200) {
                     throw new ValidationException("Максимальная длина описания — 200 символов");
                 }
                 oldFilm.setDescription(newFilm.getDescription());
             }
 
-            if(newFilm.getReleaseDate()!=null){
-                if(newFilm.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))){
+            if (newFilm.getReleaseDate() != null) {
+                if (newFilm.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
                     throw new ValidationException("Дата релиза — не раньше 28 декабря 1895 года");
                 }
                 oldFilm.setReleaseDate(newFilm.getReleaseDate());
             }
 
-            if(newFilm.getDuration()!=null){
-                if(newFilm.getDuration().toMinutes()<0){
+            if (newFilm.getDuration() != null) {
+                if (newFilm.getDuration().toMinutes() < 0) {
                     throw new ValidationException("Продолжительность фильма должна быть положительным числом");
                 }
                 oldFilm.setDuration(newFilm.getDuration());
@@ -83,7 +83,7 @@ public class FilmController {
         throw new ValidationException("Фильма с id = " + newFilm.getId() + " нет");
     }
 
-    private Long getNextId(){
+    private Long getNextId() {
         long currentMaxId = films.keySet()
                 .stream()
                 .mapToLong(id -> id)
