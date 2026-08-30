@@ -30,7 +30,7 @@ public class UserController {
             printException("Логин не может содержать пробелы");
         }
 
-        if (user.getName() == null) {
+        if (user.getName() == null || user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
 
