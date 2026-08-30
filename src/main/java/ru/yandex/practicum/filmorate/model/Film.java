@@ -18,8 +18,8 @@ public class Film {
     @NotNull
     @NotBlank
     private String description;
-    @Past
     private LocalDate releaseDate;
     @Positive
+    @NotNull
     private Long duration;
 }
