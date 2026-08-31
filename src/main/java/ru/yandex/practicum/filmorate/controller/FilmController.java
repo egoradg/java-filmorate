@@ -1,13 +1,15 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.LocalDateAdapter;
 
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,8 +20,12 @@ public class FilmController {
     private final Map<Long, Film> films = new HashMap<>();
 
     @GetMapping
-    public Collection<Film> findAll() {
-        return films.values();
+    public String findAll() {
+        Gson gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                .create();
+        return gson.toJson(films.values());
     }
 
     @PostMapping
@@ -90,5 +96,9 @@ public class FilmController {
     private void printException(String message) throws ValidationException {
         log.warn(message);
         throw new ValidationException(message);
+    }
+
+    public void clear(){
+        films.clear();
     }
 }
