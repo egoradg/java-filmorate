@@ -10,14 +10,18 @@ import java.time.LocalDate;
 @Builder
 public class User {
     private Long id;
+
     @Email
     @NotNull
     @NotBlank
     private String email;
+
     @NotNull
     @NotBlank
     private String login;
+
     private String name;
+
     @NotNull
     @PastOrPresent
     private LocalDate birthday;

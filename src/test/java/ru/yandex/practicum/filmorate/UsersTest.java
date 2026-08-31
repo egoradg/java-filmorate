@@ -57,12 +57,12 @@ public class UsersTest {
     }
 
     @BeforeEach
-    void beforeEach(){
+    void beforeEach() {
         baseUrl = "http://localhost:" + port;
     }
 
     @AfterEach
-    void afterEach(){
+    void afterEach() {
         userController.clear();
     }
 

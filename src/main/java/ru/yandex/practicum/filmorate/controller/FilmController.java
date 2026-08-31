@@ -98,7 +98,7 @@ public class FilmController {
         throw new ValidationException(message);
     }
 
-    public void clear(){
+    public void clear() {
         films.clear();
     }
 }

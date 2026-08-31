@@ -21,7 +21,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -39,7 +38,7 @@ public class FilmsTests {
             .setPrettyPrinting()
             .create();
 
-    private static final Film filmOfNulls =Film.builder()
+    private static final Film filmOfNulls = Film.builder()
             .id(null)
             .name(null)
             .description(null)
@@ -58,12 +57,12 @@ public class FilmsTests {
     }
 
     @BeforeEach
-    void beforeEach(){
+    void beforeEach() {
         baseUrl = "http://localhost:" + port;
     }
 
     @AfterEach
-    void afterEach(){
+    void afterEach() {
         filmController.clear();
     }
 
@@ -124,7 +123,7 @@ public class FilmsTests {
         assertEquals(filmOfNulls, responseFilm);
 
         List<Film> films = getFilms();
-        assertEquals(0, films.size());
+        assertTrue(films.isEmpty());
     }
 
     @Test
@@ -161,7 +160,7 @@ public class FilmsTests {
         assertEquals(filmOfNulls, responseFilm);
 
         List<Film> films = getFilms();
-        assertEquals(0, films.size());
+        assertTrue(films.isEmpty());
     }
 
     @Test
@@ -178,12 +177,12 @@ public class FilmsTests {
         assertEquals(filmOfNulls, responseFilm);
 
         List<Film> films = getFilms();
-        assertEquals(0, films.size());
+        assertTrue(films.isEmpty());
     }
 
     @Test
     void testAddFilmsWithBadDuration() throws IOException, InterruptedException {
-        //название не может быть пустым
+        //продолжительность фильма должна быть положительным числом.
         Film film = Film.builder()
                 .id(1L)
                 .name("Star wars")
@@ -205,7 +204,7 @@ public class FilmsTests {
         assertEquals(filmOfNulls, responseFilm);
 
         List<Film> films = getFilms();
-        assertEquals(0, films.size());
+        assertTrue(films.isEmpty());
     }
 
     private List<Film> getFilms() throws IOException, InterruptedException {
