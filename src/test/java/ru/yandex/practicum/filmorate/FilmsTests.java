@@ -39,6 +39,14 @@ public class FilmsTests {
             .setPrettyPrinting()
             .create();
 
+    private static final Film filmOfNulls =Film.builder()
+            .id(null)
+            .name(null)
+            .description(null)
+            .releaseDate(null)
+            .duration(null)
+            .build();
+
     @Autowired
     private FilmController filmController;
 
@@ -90,6 +98,114 @@ public class FilmsTests {
 
         List<Film> films = getFilms();
         assertEquals(film, films.getFirst());
+    }
+
+    @Test
+    void testAddFilmsWithBadName() throws IOException, InterruptedException {
+        //название не может быть пустым
+        Film film = Film.builder()
+                .id(1L)
+                .name("")
+                .description("Film about space wars")
+                .releaseDate(LocalDate.of(1997, 1, 12))
+                .duration(120L)
+                .build();
+        Film responseFilm = addFilm(film);
+        assertEquals(filmOfNulls, responseFilm);
+
+        film = Film.builder()
+                .id(1L)
+                .name(null)
+                .description("Film about space wars")
+                .releaseDate(LocalDate.of(1997, 1, 12))
+                .duration(120L)
+                .build();
+        responseFilm = addFilm(film);
+        assertEquals(filmOfNulls, responseFilm);
+
+        List<Film> films = getFilms();
+        assertEquals(0, films.size());
+    }
+
+    @Test
+    void testAddFilmsWithBadDescription() throws IOException, InterruptedException {
+        //максимальная длина описания — 200 символов;
+        Film film = Film.builder()
+                .id(1L)
+                .name("Star wars")
+                .description("*".repeat(201))
+                .releaseDate(LocalDate.of(1997, 1, 12))
+                .duration(120L)
+                .build();
+        Film responseFilm = addFilm(film);
+        assertEquals(filmOfNulls, responseFilm);
+
+        film = Film.builder()
+                .id(1L)
+                .name("Star wars")
+                .description("")
+                .releaseDate(LocalDate.of(1997, 1, 12))
+                .duration(120L)
+                .build();
+        responseFilm = addFilm(film);
+        assertEquals(filmOfNulls, responseFilm);
+
+        film = Film.builder()
+                .id(1L)
+                .name("Star wars")
+                .description(null)
+                .releaseDate(LocalDate.of(1997, 1, 12))
+                .duration(120L)
+                .build();
+        responseFilm = addFilm(film);
+        assertEquals(filmOfNulls, responseFilm);
+
+        List<Film> films = getFilms();
+        assertEquals(0, films.size());
+    }
+
+    @Test
+    void testAddFilmsWithBadReleaseDate() throws IOException, InterruptedException {
+        //дата релиза — не раньше 28 декабря 1895 года
+        Film film = Film.builder()
+                .id(1L)
+                .name("Star wars")
+                .description("Film about space wars")
+                .releaseDate(LocalDate.of(1895, 12, 27))
+                .duration(120L)
+                .build();
+        Film responseFilm = addFilm(film);
+        assertEquals(filmOfNulls, responseFilm);
+
+        List<Film> films = getFilms();
+        assertEquals(0, films.size());
+    }
+
+    @Test
+    void testAddFilmsWithBadDuration() throws IOException, InterruptedException {
+        //название не может быть пустым
+        Film film = Film.builder()
+                .id(1L)
+                .name("Star wars")
+                .description("Film about space wars")
+                .releaseDate(LocalDate.of(1997, 1, 12))
+                .duration(-120L)
+                .build();
+        Film responseFilm = addFilm(film);
+        assertEquals(filmOfNulls, responseFilm);
+
+        film = Film.builder()
+                .id(1L)
+                .name("Star wars")
+                .description("Film about space wars")
+                .releaseDate(LocalDate.of(1997, 1, 12))
+                .duration(null)
+                .build();
+        responseFilm = addFilm(film);
+        assertEquals(filmOfNulls, responseFilm);
+
+        List<Film> films = getFilms();
+        assertEquals(0, films.size());
     }
 
     private List<Film> getFilms() throws IOException, InterruptedException {
