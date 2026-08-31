@@ -178,7 +178,7 @@ public class UsersTest {
         assertEquals(user, responseUser);
 
         user = User.builder()
-                .id(1L)
+                .id(2L)
                 .email("qwe@asd.ru")
                 .login("qwerty")
                 .name(null)
@@ -186,7 +186,7 @@ public class UsersTest {
                 .build();
         responseUser = addUser(user);
         user.setName(user.getLogin());
-        assertEquals(userOfNulls, responseUser);
+        assertEquals(user, responseUser);
 
         List<User> users = getUsers();
         assertEquals(2, users.size());
