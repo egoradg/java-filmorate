@@ -38,7 +38,19 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public void updateFilm(Film newFilm) {
-        films.put(newFilm.getId(), newFilm);
+        Film oldFilm = films.get(newFilm.getId());
+        if(newFilm.getName()!=null){
+            oldFilm.setName(newFilm.getName());
+        }
+        if(newFilm.getDescription()!=null){
+            oldFilm.setDescription(newFilm.getDescription());
+        }
+        if(newFilm.getReleaseDate()!=null){
+            oldFilm.setReleaseDate(newFilm.getReleaseDate());
+        }
+        if(newFilm.getDuration()!=null){
+            oldFilm.setDuration(newFilm.getDuration());
+        }
     }
 
     private Long getNextId() {
