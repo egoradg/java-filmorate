@@ -65,10 +65,10 @@ public class FilmService {
             printException("Продолжительность фильма должна быть положительным числом");
         }
 
-        storage.updateFilm(newFilm);
+        Film updatedFilm = storage.updateFilm(newFilm);
 
         log.info("Данные фильма успешно изменены");
-        return newFilm;
+        return updatedFilm;
     }
 
     public void clear(){
