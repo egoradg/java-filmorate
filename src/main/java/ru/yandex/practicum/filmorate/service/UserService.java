@@ -22,6 +22,13 @@ public class UserService {
         return storage.findAll();
     }
 
+    public User findById(Long id) {
+        if(storage.containsUser(id))
+            return storage.findById(id);
+        printException("Пользователя с id = " + id + " нет");
+        return null;
+    }
+
     public User addUser(User user) {
         log.info("Попытка добавить нового пользователя");
 

@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface UserStorage {
     List<User> findAll();
+    User findById(Long id);
     boolean containsUser(final Long id);
     void addUser(final User user);
     void deleteUser(final Long id);

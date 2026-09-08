@@ -18,6 +18,11 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
+    public User findById(Long id) {
+        return users.get(id);
+    }
+
+    @Override
     public boolean containsUser(Long id) {
         return users.containsKey(id);
     }

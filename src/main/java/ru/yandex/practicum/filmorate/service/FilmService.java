@@ -23,6 +23,13 @@ public class FilmService {
         return storage.findAll();
     }
 
+    public Film findById(Long id){
+        if(storage.containsFilm(id))
+            return storage.findById(id);
+        printException("Фильма с id = " + id + " нет");
+        return null;
+    }
+
     public Film addFilm(Film film) {
         log.info("Попытка добавить новый фильм");
 

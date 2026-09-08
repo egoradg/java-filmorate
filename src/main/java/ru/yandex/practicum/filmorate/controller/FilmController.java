@@ -21,6 +21,11 @@ public class FilmController {
         return service.findAll();
     }
 
+    @GetMapping("/{id}")
+    public Film findById(@PathVariable Long id) {
+        return service.findById(id);
+    }
+
     @PostMapping
     public Film addFilm(@Valid @RequestBody Film film) {
         return service.addFilm(film);
@@ -32,7 +37,7 @@ public class FilmController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteFilm(@RequestParam Long id){
+    public void deleteFilm(@PathVariable Long id){
         service.deleteFilm(id);
     }
 
