@@ -20,6 +20,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,11 +47,13 @@ public class UsersTest {
             .birthday(null)
             .build();
 
+
     @Autowired
     private UserController userController;
 
     @BeforeAll
     static void beforeAll() {
+        userOfNulls.setFriends(null);
         client = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(2))
                 .build();

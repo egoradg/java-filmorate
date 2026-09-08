@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -28,6 +29,8 @@ public class UserService {
         printException("Пользователя с id = " + id + " нет");
         return null;
     }
+
+
 
     public User addUser(User user) {
         log.info("Попытка добавить нового пользователя");
@@ -85,8 +88,28 @@ public class UserService {
         return updatedUser;
     }
 
+    public void addFriend(Long id, Long friendId) {
+        log.info("Попытка добавить друга");
+        User user = storage.findById(id);
+        if(user.getFriends().add(friendId)){
+            log.info("Друг успешно добавлен");
+        } else {
+            log.info("Вы уже являетесь друзьями");
+        }
+    }
+
+    public void deleteFriend(Long id, Long friendId) {
+        User user = storage.findById(id);
+        if(user.getFriends().remove(id)){
+            log.info("Пользователь удалён из друзей");
+        } else {
+            log.info("Вы и так не были друзьями");
+        }
+    }
+
     public void deleteUser(Long id) {
         storage.deleteUser(id);
+        log.info("Данные пользователя успешно удалены");
     }
 
     public void clear(){
@@ -96,5 +119,27 @@ public class UserService {
     private void printException(String message) throws ValidationException {
         log.warn(message);
         throw new ValidationException(message);
+    }
+
+
+    public List<User> findFriends(Long id) {
+        log.info("Попытка найти друзей");
+        return storage.findFriends(id);
+    }
+
+    public List<User> findCommonFriends(Long id, Long otherId) {
+        log.info("Попытка найти одинаковых друзей");
+        User user1 = storage.findById(id);
+        User user2 = storage.findById(otherId);
+        return getCommonIds(user1.getFriends(), user2.getFriends())
+                .stream()
+                .map(storage::findById)
+                .toList();
+    }
+
+    private List<Long> getCommonIds(Set<Long> friends1, Set<Long> friends2){
+        return friends1.stream()
+                .filter(friends2::contains)
+                .toList();
     }
 }

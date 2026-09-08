@@ -52,6 +52,15 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
+    public List<User> findFriends(Long id) {
+        return users.get(id)
+                .getFriends()
+                .stream()
+                .map(users::get)
+                .toList();
+    }
+
+    @Override
     public void deleteUser(Long id) {
         users.remove(id);
     }
