@@ -133,7 +133,7 @@ public class FilmService {
         log.info("Попытка получить популярные фильмы");
         if (count == null)
             count = 10L;
-        if(count<=0){
+        if (count <= 0) {
             printException("Параметр count должен быть больше нуля");
         }
         System.out.println("count = " + count);

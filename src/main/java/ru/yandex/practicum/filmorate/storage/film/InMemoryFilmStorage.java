@@ -66,7 +66,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public List<Film> getPopularFilms(Long count) {
-        if(count>films.size())
+        if (count > films.size())
             count = (long) films.size();
         return films.values().stream()
                 .sorted((o1, o2) -> {

@@ -25,7 +25,7 @@ public class UserService {
     }
 
     public User findById(Long id) {
-        if(storage.containsUser(id))
+        if (storage.containsUser(id))
             return storage.findById(id);
         printNotFoundException("Пользователя с id = " + id + " нет");
         return null;
@@ -89,18 +89,17 @@ public class UserService {
 
     public void addFriend(Long id, Long friendId) {
         log.info("Попытка добавить друга");
-        if(id==friendId){
+        if (id == friendId) {
             printException("Нельзя добавить себя в друзья");
         }
-        if(!storage.containsUser(id))
+        if (!storage.containsUser(id))
             printNotFoundException("Пользователя с id = " + id + " нет");
-        if(!storage.containsUser(friendId))
+        if (!storage.containsUser(friendId))
             printNotFoundException("Пользователя с id = " + friendId + " нет");
 
         User user = storage.findById(id);
         User friend = storage.findById(friendId);
-        if(user.getFriends().add(friendId) && friend.getFriends().add(id)){
-        //if(user.getFriends().add(friendId)){
+        if (user.getFriends().add(friendId) && friend.getFriends().add(id)) {
             log.info("Друг успешно добавлен");
         } else {
             printException("Вы уже являетесь друзьями");
@@ -108,14 +107,14 @@ public class UserService {
     }
 
     public void deleteFriend(Long id, Long friendId) {
-        if(!storage.containsUser(id))
+        if (!storage.containsUser(id))
             printNotFoundException("Пользователя с id = " + id + " нет");
-        if(!storage.containsUser(friendId))
+        if (!storage.containsUser(friendId))
             printNotFoundException("Пользователя с id = " + friendId + " нет");
 
         User user = storage.findById(id);
         User friend = storage.findById(friendId);
-        if(user.getFriends().remove(friendId) && friend.getFriends().remove(id)){
+        if (user.getFriends().remove(friendId) && friend.getFriends().remove(id)) {
             log.info("Пользователь удалён из друзей");
         } else {
             log.warn("Вы и так не были друзьями");
@@ -123,13 +122,13 @@ public class UserService {
     }
 
     public void deleteUser(Long id) {
-        if(!storage.containsUser(id))
+        if (!storage.containsUser(id))
             printNotFoundException("Пользователя с id = " + id + " нет");
         storage.deleteUser(id);
         log.info("Данные пользователя успешно удалены");
     }
 
-    public void clear(){
+    public void clear() {
         storage.clear();
     }
 
@@ -144,7 +143,7 @@ public class UserService {
     }
 
     public List<User> findFriends(Long id) {
-        if(!storage.containsUser(id))
+        if (!storage.containsUser(id))
             printNotFoundException("Пользователя с id = " + id + " нет");
         log.info("Попытка найти друзей");
         return storage.findFriends(id);
@@ -152,9 +151,9 @@ public class UserService {
 
     public List<User> findCommonFriends(Long id, Long otherId) {
         log.info("Попытка найти одинаковых друзей");
-        if(!storage.containsUser(id))
+        if (!storage.containsUser(id))
             printNotFoundException("Пользователя с id = " + id + " нет");
-        if(!storage.containsUser(otherId))
+        if (!storage.containsUser(otherId))
             printNotFoundException("Пользователя с id = " + otherId + " нет");
         User user1 = storage.findById(id);
         User user2 = storage.findById(otherId);
@@ -164,7 +163,7 @@ public class UserService {
                 .toList();
     }
 
-    private List<Long> getCommonIds(Set<Long> friends1, Set<Long> friends2){
+    private List<Long> getCommonIds(Set<Long> friends1, Set<Long> friends2) {
         return friends1.stream()
                 .filter(friends2::contains)
                 .toList();
