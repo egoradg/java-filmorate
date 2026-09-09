@@ -51,6 +51,7 @@ public class FilmsTests {
 
     @BeforeAll
     static void beforeAll() {
+        filmOfNulls.setLikes(null);
         client = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(2))
                 .build();
