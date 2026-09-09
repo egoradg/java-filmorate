@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -26,11 +27,9 @@ public class UserService {
     public User findById(Long id) {
         if(storage.containsUser(id))
             return storage.findById(id);
-        printException("Пользователя с id = " + id + " нет");
+        printNotFoundException("Пользователя с id = " + id + " нет");
         return null;
     }
-
-
 
     public User addUser(User user) {
         log.info("Попытка добавить нового пользователя");
@@ -56,7 +55,7 @@ public class UserService {
             printException("Id не может быть пустым");
         }
         if (!storage.containsUser(newUser.getId())) {
-            printException("Пользователя с id = " + newUser.getId() + " нет");
+            printNotFoundException("Пользователя с id = " + newUser.getId() + " нет");
         }
 
         if (newUser.getEmail() != null) {
@@ -90,24 +89,42 @@ public class UserService {
 
     public void addFriend(Long id, Long friendId) {
         log.info("Попытка добавить друга");
+        if(id==friendId){
+            printException("Нельзя добавить себя в друзья");
+        }
+        if(!storage.containsUser(id))
+            printNotFoundException("Пользователя с id = " + id + " нет");
+        if(!storage.containsUser(friendId))
+            printNotFoundException("Пользователя с id = " + friendId + " нет");
+
         User user = storage.findById(id);
-        if(user.getFriends().add(friendId)){
+        User friend = storage.findById(friendId);
+        if(user.getFriends().add(friendId) && friend.getFriends().add(id)){
+        //if(user.getFriends().add(friendId)){
             log.info("Друг успешно добавлен");
         } else {
-            log.info("Вы уже являетесь друзьями");
+            printException("Вы уже являетесь друзьями");
         }
     }
 
     public void deleteFriend(Long id, Long friendId) {
+        if(!storage.containsUser(id))
+            printNotFoundException("Пользователя с id = " + id + " нет");
+        if(!storage.containsUser(friendId))
+            printNotFoundException("Пользователя с id = " + friendId + " нет");
+
         User user = storage.findById(id);
-        if(user.getFriends().remove(id)){
+        User friend = storage.findById(friendId);
+        if(user.getFriends().remove(friendId) && friend.getFriends().remove(id)){
             log.info("Пользователь удалён из друзей");
         } else {
-            log.info("Вы и так не были друзьями");
+            log.warn("Вы и так не были друзьями");
         }
     }
 
     public void deleteUser(Long id) {
+        if(!storage.containsUser(id))
+            printNotFoundException("Пользователя с id = " + id + " нет");
         storage.deleteUser(id);
         log.info("Данные пользователя успешно удалены");
     }
@@ -121,14 +138,24 @@ public class UserService {
         throw new ValidationException(message);
     }
 
+    private void printNotFoundException(String message) throws NotFoundException {
+        log.warn(message);
+        throw new NotFoundException(message);
+    }
 
     public List<User> findFriends(Long id) {
+        if(!storage.containsUser(id))
+            printNotFoundException("Пользователя с id = " + id + " нет");
         log.info("Попытка найти друзей");
         return storage.findFriends(id);
     }
 
     public List<User> findCommonFriends(Long id, Long otherId) {
         log.info("Попытка найти одинаковых друзей");
+        if(!storage.containsUser(id))
+            printNotFoundException("Пользователя с id = " + id + " нет");
+        if(!storage.containsUser(otherId))
+            printNotFoundException("Пользователя с id = " + otherId + " нет");
         User user1 = storage.findById(id);
         User user2 = storage.findById(otherId);
         return getCommonIds(user1.getFriends(), user2.getFriends())
