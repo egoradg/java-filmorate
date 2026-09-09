@@ -12,5 +12,6 @@ public interface FilmStorage {
     void addFilm(final Film film);
     void deleteFilm(final Long id);
     Film updateFilm(final Film newFilm);
+    List<Film> getPopularFilms(Long count);
     void clear();
 }

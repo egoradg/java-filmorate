@@ -2,10 +2,12 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,19 +16,21 @@ import java.util.List;
 @Service
 public class FilmService {
     private final FilmStorage storage;
+    private final UserStorage userStorage;
 
-    public FilmService(InMemoryFilmStorage storage) {
+    public FilmService(InMemoryFilmStorage storage, UserStorage userStorage) {
         this.storage = storage;
+        this.userStorage = userStorage;
     }
 
     public List<Film> findAll() {
         return storage.findAll();
     }
 
-    public Film findById(Long id){
-        if(storage.containsFilm(id))
+    public Film findById(Long id) {
+        if (storage.containsFilm(id))
             return storage.findById(id);
-        printException("Фильма с id = " + id + " нет");
+        printNotFoundException("Фильма с id = " + id + " нет");
         return null;
     }
 
@@ -48,7 +52,7 @@ public class FilmService {
             printException("Id не может быть пустым");
         }
         if (!storage.containsFilm(newFilm.getId())) {
-            printException("Фильма с id = " + newFilm.getId() + " нет");
+            printNotFoundException("Фильма с id = " + newFilm.getId() + " нет");
         }
 
         if (newFilm.getName().isBlank()) {
@@ -78,7 +82,7 @@ public class FilmService {
         return updatedFilm;
     }
 
-    public void clear(){
+    public void clear() {
         storage.clear();
     }
 
@@ -87,7 +91,52 @@ public class FilmService {
         throw new ValidationException(message);
     }
 
+    private void printNotFoundException(String message) throws NotFoundException {
+        log.warn(message);
+        throw new NotFoundException(message);
+    }
+
     public void deleteFilm(Long id) {
         storage.deleteFilm(id);
+    }
+
+    public void likeFilm(Long id, Long userId) {
+        if (!storage.containsFilm(id)) {
+            printNotFoundException("Фильма с id = " + id + " нет");
+        }
+
+        if (!userStorage.containsUser(userId))
+            printNotFoundException("Пользователя с id = " + id + " нет");
+
+        Film film = storage.getFilm(id);
+        if (film.getLikes().add(userId))
+            log.info("Лайк поставлен");
+        else
+            printException("Вы уже поставили лайк этому фильму");
+    }
+
+    public void deleteLike(Long id, Long userId) {
+        if (!storage.containsFilm(id))
+            printNotFoundException("Фильма с id = " + id + " нет");
+
+        if (!userStorage.containsUser(userId))
+            printNotFoundException("Пользователя с id = " + id + " нет");
+
+        Film film = storage.getFilm(id);
+        if (film.getLikes().remove(userId))
+            log.info("Лайк удалён");
+        else
+            printException("Вы не ставили лайк этому фильму");
+    }
+
+    public List<Film> getPopularFilms(Long count) {
+        log.info("Попытка получить популярные фильмы");
+        if (count == null)
+            count = 10L;
+        if(count<=0){
+            printException("Параметр count должен быть больше нуля");
+        }
+        System.out.println("count = " + count);
+        return storage.getPopularFilms(count);
     }
 }

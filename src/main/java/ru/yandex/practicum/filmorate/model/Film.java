@@ -5,12 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Film.
  */
 @Data
-@Builder
+
 public class Film {
     private Long id;
 
@@ -28,4 +30,16 @@ public class Film {
     @Positive
     @NotNull
     private Long duration;
+
+    private Set<Long> likes;
+
+    @Builder
+    public Film(Long id, String name, String description, LocalDate releaseDate, Long duration) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.likes = new HashSet<>();
+    }
 }
