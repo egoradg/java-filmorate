@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -51,35 +50,12 @@ public class UserService {
     public User updateUser(User newUser) {
         log.info("Попытка изменить пользователя");
 
-        if (newUser.getId() == null) {
-            printException("Id не может быть пустым");
-        }
         if (!storage.containsUser(newUser.getId())) {
             printNotFoundException("Пользователя с id = " + newUser.getId() + " нет");
         }
 
-        if (newUser.getEmail() != null) {
-            if (newUser.getEmail().isBlank()) {
-                newUser.setEmail(null);
-            } else if (!newUser.getEmail().contains("@")) {
-                printException("Имейл должен содержать символ '@'");
-            }
-        }
-
-        if (newUser.getLogin() != null) {
-            if (newUser.getLogin().isBlank()) {
-                newUser.setLogin(null);
-            } else if (newUser.getLogin().contains(" ")) {
-                printException("Логин не может содержать пробелы");
-            }
-        }
-
-        if (newUser.getName().isBlank()) {
-            newUser.setName(null);
-        }
-
-        if (newUser.getBirthday() != null && newUser.getBirthday().isAfter(LocalDate.now())) {
-            printException("дата рождения не может быть в будущем");
+        if (newUser.getLogin() != null && newUser.getLogin().contains(" ")) {
+            printException("Логин не может содержать пробелы");
         }
 
         User updatedUser = storage.updateUser(newUser);
@@ -155,6 +131,7 @@ public class UserService {
             printNotFoundException("Пользователя с id = " + id + " нет");
         if (!storage.containsUser(otherId))
             printNotFoundException("Пользователя с id = " + otherId + " нет");
+
         User user1 = storage.findById(id);
         User user2 = storage.findById(otherId);
         return getCommonIds(user1.getFriends(), user2.getFriends())

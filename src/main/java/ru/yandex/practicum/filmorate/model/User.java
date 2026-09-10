@@ -10,21 +10,23 @@ import java.util.Set;
 
 @Data
 public class User {
+    @NotNull(groups = UserValidationGroups.UpdateGroup.class)
     private Long id;
 
-    @Email
-    @NotNull
-    @NotBlank
+    @Email(groups = {UserValidationGroups.CreateGroup.class, UserValidationGroups.UpdateGroup.class})
+    @NotNull(groups = UserValidationGroups.CreateGroup.class)
+    @NotBlank(groups = {UserValidationGroups.CreateGroup.class, UserValidationGroups.UpdateGroup.class})
     private String email;
 
-    @NotNull
-    @NotBlank
+    @NotNull(groups = UserValidationGroups.CreateGroup.class)
+    @NotBlank(groups = {UserValidationGroups.CreateGroup.class, UserValidationGroups.UpdateGroup.class})
     private String login;
 
+    @NotBlank(groups = UserValidationGroups.UpdateGroup.class)
     private String name;
 
-    @NotNull
-    @PastOrPresent
+    @NotNull(groups = UserValidationGroups.CreateGroup.class)
+    @PastOrPresent(groups = {UserValidationGroups.CreateGroup.class, UserValidationGroups.UpdateGroup.class})
     private LocalDate birthday;
 
     private Set<Long> friends;
