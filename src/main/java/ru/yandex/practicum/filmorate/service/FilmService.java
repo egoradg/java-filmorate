@@ -18,7 +18,7 @@ public class FilmService {
     private final FilmStorage storage;
     private final UserStorage userStorage;
 
-    public FilmService(InMemoryFilmStorage storage, UserStorage userStorage) {
+    public FilmService(FilmStorage storage, UserStorage userStorage) {
         this.storage = storage;
         this.userStorage = userStorage;
     }
@@ -60,11 +60,11 @@ public class FilmService {
         }
 
         if (newFilm.getDescription() != null) {
-            if (newFilm.getDescription().isBlank()) {
-                newFilm.setDescription(null);
-            }
             if (newFilm.getDescription().length() > 200) {
                 printException("Максимальная длина описания — 200 символов");
+            }
+            if (newFilm.getDescription().isBlank()) {
+                newFilm.setDescription(null);
             }
         }
 
