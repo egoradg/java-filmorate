@@ -46,11 +46,13 @@ public class UsersTest {
             .birthday(null)
             .build();
 
+
     @Autowired
     private UserController userController;
 
     @BeforeAll
     static void beforeAll() {
+        userOfNulls.setFriends(null);
         client = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(2))
                 .build();
