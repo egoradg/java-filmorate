@@ -2,6 +2,8 @@
 
 Template repository for Filmorate project.
 
+# я никого не нашел на проверкук макета бд поэтому его никто не проверял
+
 # Database
 
 ![Database_films_and_users.png](Database_films_and_users.png)
