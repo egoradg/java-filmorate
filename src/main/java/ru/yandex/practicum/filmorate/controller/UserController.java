@@ -1,8 +1,12 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.NewUserRequest;
+import ru.yandex.practicum.filmorate.dto.UpdateUserRequest;
+import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.UserValidationGroups;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -20,32 +24,32 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> findAll() {
+    public List<UserDto> findAll() {
         return service.findAll();
     }
 
     @GetMapping("/{id}")
-    public User findById(@PathVariable Long id) {
+    public UserDto findById(@PathVariable Long id) {
         return service.findById(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public List<User> findCommonFriends(@PathVariable Long id, @PathVariable Long otherId) {
+    public List<UserDto> findCommonFriends(@PathVariable Long id, @PathVariable Long otherId) {
         return service.findCommonFriends(id, otherId);
     }
 
     @PostMapping
-    public User addUser(@Validated(UserValidationGroups.CreateGroup.class) @RequestBody User user) {
-        return service.addUser(user);
+    public UserDto addUser(@Valid @RequestBody NewUserRequest request) {
+        return service.addUser(request);
     }
 
-    @PutMapping
-    public User updateUser(@Validated(UserValidationGroups.UpdateGroup.class) @RequestBody User newUser) {
-        return service.updateUser(newUser);
+    @PutMapping("/{id}")
+    public UserDto updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest request) {
+        return service.updateUser(id, request);
     }
 
     @GetMapping("/{id}/friends")
-    List<User> findFriends(@PathVariable Long id) {
+    List<UserDto> findFriends(@PathVariable Long id) {
         return service.findFriends(id);
     }
 

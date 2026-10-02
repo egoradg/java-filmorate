@@ -13,7 +13,7 @@ public interface UserStorage {
 
     boolean containsUser(final Long id);
 
-    void addUser(final User user);
+    User addUser(final User user);
 
     void deleteUser(final Long id);
 

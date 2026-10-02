@@ -30,18 +30,15 @@ public class User {
     @PastOrPresent(groups = {UserValidationGroups.CreateGroup.class, UserValidationGroups.UpdateGroup.class})
     private LocalDate birthday;
 
-    private Set<Long> friends;
-
-    private FriendsStatus friendsStatus;
+    private Set<Friend> friends;
 
     @Builder
-    public User(Long id, String email, String login, String name, LocalDate birthday, FriendsStatus friendsStatus) {
+    public User(Long id, String email, String login, String name, LocalDate birthday) {
         this.id = id;
         this.email = email;
         this.login = login;
         this.name = name;
         this.birthday = birthday;
         this.friends = new HashSet<>();
-        this.friendsStatus = friendsStatus;
     }
 }
