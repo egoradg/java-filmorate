@@ -32,10 +32,18 @@ CREATE TABLE IF NOT EXISTS films (
     description VARCHAR(200) NOT NULL,
     release_date DATE NOT NULL,
     duration INTEGER NOT NULL,
-    genre_id INTEGER NOT NULL,
+    --genre_id INTEGER NOT NULL,
     rating_id INTEGER NOT NULL,
     CONSTRAINT fk_films_genre FOREIGN KEY (genre_id) REFERENCES genre (id),
     CONSTRAINT fk_films_rating FOREIGN KEY (rating_id) REFERENCES ratingMPA (id)
+);
+
+CREATE TABLE IF NOT EXISTS film_genre (
+    film_id INTEGER NOT NULL,
+    genre_id INTEGER NOT NULL,
+    CONSTRAINT pk_film_genre PRIMARY KEY (film_id, genre_id),
+    CONSTRAINT fk_film_genre_film FOREIGN KEY (film_id) REFERENCES films (id) ON DELETE CASCADE,
+    CONSTRAINT fk_film_genre_genre FOREIGN KEY (genre_id) REFERENCES genre (id)
 );
 
 -- 6. Лайки (составной первичный ключ)

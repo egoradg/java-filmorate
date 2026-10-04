@@ -14,7 +14,10 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 public class BaseRepository<T> {
-    private static final String CLEAR_QUERY = "DELETE FROM ?";
+    private static final String CLEAR_QUERY = """
+            DELETE FROM ?;
+            ALTER TABLE ? ALTER COLUMN id RESTART WITH 1;
+            """;
 
     protected final JdbcTemplate jdbc;
     protected final RowMapper<T> mapper;
@@ -32,8 +35,8 @@ public class BaseRepository<T> {
         return jdbc.query(query, mapper, params);
     }
 
-    protected boolean delete(String query, long id) {
-        int rowsDeleted = jdbc.update(query, id);
+    protected boolean delete(String query, Object... ids) {
+        int rowsDeleted = jdbc.update(query, ids);
         return rowsDeleted > 0;
     }
 
@@ -71,5 +74,6 @@ public class BaseRepository<T> {
 
     protected void clear(String tableName) {
         jdbc.update(CLEAR_QUERY, tableName);
+
     }
 }

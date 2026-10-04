@@ -65,9 +65,9 @@ public class InMemoryFilmStorage implements FilmStorage {
             count = (long) films.size();
         return films.values().stream()
                 .sorted((o1, o2) -> {
-                    if (o1.getLikes().size() == o2.getLikes().size())
+                    if (o1.getLikes() == o2.getLikes())
                         return 0;
-                    return o1.getLikes().size() > o2.getLikes().size() ? -1 : 1;
+                    return o1.getLikes() > o2.getLikes() ? -1 : 1;
                 })
                 .limit(count)
                 .toList();
@@ -80,5 +80,15 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .max()
                 .orElse(0);
         return ++currentMaxId;
+    }
+
+    @Override
+    public Long addLike(long filmId, long userId) {
+        return null;
+    }
+
+    @Override
+    public Long deleteLike(long filmId, long userId) {
+        return null;
     }
 }
