@@ -29,4 +29,10 @@ public class GenreDbStorage extends BaseRepository<Genre> implements GenreStorag
         return findOne(GenreSQL.FIND_BY_ID_QUERY, id)
                 .orElseThrow(() -> new NotFoundException("Жанр с id: " + id + " не найден"));
     }
+
+    @Override
+    public void clear() {
+        String clear = "DELETE FROM film_genre;";
+        jdbc.update(clear);
+    }
 }

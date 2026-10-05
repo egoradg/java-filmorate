@@ -24,4 +24,8 @@ public class GenreService {
     public Genre getById(Long id) {
         return storage.getGenre(id);
     }
+
+    public void clear(){
+        storage.clear();
+    }
 }

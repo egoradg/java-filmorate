@@ -14,11 +14,6 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 public class BaseRepository<T> {
-    private static final String CLEAR_QUERY = """
-            DELETE FROM ?;
-            ALTER TABLE ? ALTER COLUMN id RESTART WITH 1;
-            """;
-
     protected final JdbcTemplate jdbc;
     protected final RowMapper<T> mapper;
 
@@ -73,7 +68,8 @@ public class BaseRepository<T> {
     }
 
     protected void clear(String tableName) {
-        jdbc.update(CLEAR_QUERY, tableName);
+        String clear = "DELETE FROM " + tableName + "; ALTER TABLE " + tableName + " ALTER COLUMN id RESTART WITH 1;";
+        jdbc.update(clear);
 
     }
 }

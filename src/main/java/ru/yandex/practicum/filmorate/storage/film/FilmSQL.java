@@ -12,7 +12,7 @@ public class FilmSQL {
                    r.name AS mpa_name
             FROM films f
             LEFT JOIN likes l ON f.id = l.film_id
-            JOIN ratingMPA r ON f.rating_id = r.id
+            LEFT JOIN ratingMPA r ON f.rating_id = r.id
             GROUP BY f.id, f.name, f.description, f.release_date, f.duration, r.name
             """;
     public static final String FIND_BY_ID_QUERY = """
@@ -26,7 +26,7 @@ public class FilmSQL {
                    r.name AS mpa_name
             FROM films f
             LEFT JOIN likes l ON f.id = l.film_id
-            JOIN ratingMPA r ON f.rating_id = r.id
+            LEFT JOIN ratingMPA r ON f.rating_id = r.id
             WHERE f.id = ?
             GROUP BY f.id, f.name, f.description, f.release_date, f.duration, r.name
             """;
