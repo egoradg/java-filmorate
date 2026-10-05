@@ -8,6 +8,79 @@ Template repository for Filmorate project.
 
 ![Database_films_and_users.png](films_and_users.png)
 
+```
+Table ratingMPA {
+id integer [primary key]
+name varchar [not null, unique]
+}
+
+Table genre {
+id integer [primary key]
+name varchar [not null, unique]
+}
+
+Table friends_status {
+id integer [primary key]
+name varchar [not null, unique]
+}
+
+Table users {
+id integer [primary key]
+email varchar [not null, unique]
+login varchar [not null, unique]
+name varchar [not null]
+birthday date [not null]
+}
+
+Table films {
+id integer [primary key]
+name varchar [not null]
+description varchar(200) [not null]
+release_date date [not null]
+duration integer [not null]
+rating_id integer
+}
+
+Table film_genre {
+film_id integer [not null]
+genre_id integer [not null]
+
+indexes {
+    (film_id, genre_id) [pk]
+    }
+}
+
+// Лайки (many-to-many между users и films)
+Table likes {
+film_id integer [not null]
+user_id integer [not null]
+
+indexes {
+    (film_id, user_id) [pk]
+    }
+}
+
+// Друзья (many-to-many между users)
+Table friends {
+user1_id integer [not null]
+user2_id integer [not null]
+status integer [not null, default: 'unconfirmed']
+
+indexes {
+    (user1_id, user2_id) [pk]
+    }
+}
+
+Ref: films.rating_id >? ratingMPA.id
+Ref: film_genre.film_id > films.id
+Ref: film_genre.genre_id > genre.id
+Ref: likes.film_id > films.id
+Ref: likes.user_id > users.id
+Ref: friends.user1_id > users.id
+Ref: friends.user2_id > users.id
+Ref: friends.status > friends_status.id
+```
+
 ## Операции с базой данных
 
 ## Фильмы
