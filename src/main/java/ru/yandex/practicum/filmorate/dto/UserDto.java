@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import ru.yandex.practicum.filmorate.model.Friend;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -16,5 +15,5 @@ public class UserDto {
     private String name;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private LocalDate birthday;
-    private Set<Friend> friends;
+    private Set<Long> friends;
 }

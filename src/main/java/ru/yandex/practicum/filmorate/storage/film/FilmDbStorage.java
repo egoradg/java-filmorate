@@ -6,26 +6,36 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Id;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.service.GenreService;
+import ru.yandex.practicum.filmorate.service.MpaService;
 import ru.yandex.practicum.filmorate.storage.BaseRepository;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Repository("filmDb")
 public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
+    private final MpaService mpaService;
+    private final GenreService genreService;
 
-    public FilmDbStorage(JdbcTemplate jdbc, RowMapper<Film> mapper) {
+    public FilmDbStorage(JdbcTemplate jdbc, RowMapper<Film> mapper, MpaService mpaService, GenreService genreService) {
         super(jdbc, mapper);
+        this.mpaService = mpaService;
+        this.genreService = genreService;
     }
 
     @Override
     public List<Film> findAll() {
-        return findMany(FilmSQL.FIND_ALL_QUERY);
+        List<Film> films = findMany(FilmSQL.FIND_ALL_QUERY);
+        films.forEach(f -> f.setGenre(loadGenres(f.getId())));
+        return films;
     }
 
-    private List<Id> loadGenres(Long filmId) {
+    private List<Genre> loadGenres(Long filmId) {
         return jdbc.queryForList(FilmSQL.FIND_GENRES_BY_FILM, Long.class, filmId).stream()
-                .map(id -> new Id(id))
+                .map(genreService::getById)
                 .toList();
     }
 
@@ -46,14 +56,14 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
     public Film findById(Long id) {
         Film film = findOne(FilmSQL.FIND_BY_ID_QUERY, id)
                 .orElseThrow(() -> new NotFoundException("Фильм с id: " + id + " не найден"));
-        System.out.println(film);
         film.setGenre(loadGenres(film.getId()));
         return film;
     }
 
     @Override
     public boolean containsFilm(Long id) {
-        return findById(id) != null;
+        findById(id);
+        return true;
     }
 
     @Override
@@ -92,7 +102,10 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
 
     private void insertGenres(Film film) {
         if (film.getGenre() == null || film.getGenre().isEmpty()) return;
-        film.getGenre().forEach(genre -> addGenres(film.getId(), genre.getId()));
+        Set<Long> ids = film.getGenre().stream()
+                .map(Genre::getId)
+                .collect(Collectors.toSet());
+        ids.forEach(genre -> addGenres(film.getId(), genre));
     }
 
     @Override
@@ -109,7 +122,7 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
                 newFilm.getDescription(),
                 newFilm.getReleaseDate(),
                 newFilm.getDuration(),
-                newFilm.getRating(),
+                newFilm.getRating().getId(),
                 newFilm.getId()
         );
         if (newFilm.getGenre() != null && !newFilm.getGenre().isEmpty()) {
@@ -128,8 +141,8 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
 
     @Override
     public void clear() {
-        clear("films");
         clear("film_genre");
+        clear("films");
     }
 
     public Long addLike(long filmId, long userId) {

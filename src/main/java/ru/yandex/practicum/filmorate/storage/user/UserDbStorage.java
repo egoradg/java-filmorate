@@ -8,35 +8,11 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.BaseRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 // для входа в консоль http://localhost:8080/h2-console
 @Repository("userDb")
 public class UserDbStorage extends BaseRepository<User> implements UserStorage {
-    private static final String FIND_ALL_QUERY = "SELECT * FROM users";
-    private static final String FIND_BY_ID_QUERY = "SELECT * FROM users WHERE id = ?";
-    private static final String INSERT_QUERY = "INSERT INTO users (email, login, name, birthday)" +
-            "VALUES (?, ?, ?, ?)";
-    private static final String UPDATE_QUERY = "UPDATE users SET email = ?, login = ?, name = ? WHERE id = ?";
-    private static final String DELETE_QUERY = "DELETE FROM users WHERE id = ?";
-    private static final String FIND_FRIENDS_QUERY =
-            "SELECT " +
-                    "u.id, " +
-                    "u.email, " +
-                    "u.login, " +
-                    "u.name, " +
-                    "u.birthday " +
-                    "FROM users u " +
-                    "WHERE u.id IN(" +
-                    "    SELECT user2_id" +
-                    "    FROM friends" +
-                    "    WHERE user1_id= ?" +
-                    "    )" +
-                    "OR u.id IN(" +
-                    "    SELECT user1_id" +
-                    "    FROM friends" +
-                    "    WHERE user2_id=?" +
-                    "    )";
-
 
     public UserDbStorage(JdbcTemplate jdbc, RowMapper<User> mapper) {
         super(jdbc, mapper);
@@ -44,19 +20,36 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage {
 
     @Override
     public List<User> findAll() {
-        return findMany(FIND_ALL_QUERY);
+        List<User> users = findMany(UserSQL.FIND_ALL_QUERY);
+        users.forEach(u -> u.setFriends(
+                        findFriends(u.getId()).stream()
+                                .map(User::getId)
+                                .collect(Collectors.toSet())
+                )
+        );
+        return users;
     }
 
     @Override
     public User findById(Long userId) {
-        return findOne(FIND_BY_ID_QUERY, userId)
+        User user = findOne(UserSQL.FIND_BY_ID_QUERY, userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id: " + userId + " не найден"));
+        user.setFriends(findFriends(user.getId()).stream()
+                .map(User::getId)
+                .collect(Collectors.toSet()));
+        return user;
+    }
+
+    @Override
+    public boolean containsUser(Long id) {
+        findById(id);
+        return true;
     }
 
     @Override
     public User addUser(User user) {
         long id = insert(
-                INSERT_QUERY,
+                UserSQL.INSERT_QUERY,
                 user.getEmail(),
                 user.getLogin(),
                 user.getName(),
@@ -69,7 +62,7 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage {
     @Override
     public User updateUser(User user) {
         update(
-                UPDATE_QUERY,
+                UserSQL.UPDATE_QUERY,
                 user.getEmail(),
                 user.getLogin(),
                 user.getName(),
@@ -78,21 +71,35 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage {
         return user;
     }
 
+    @Override
+    public void deleteUser(Long id) {
+        if (!delete(UserSQL.DELETE_QUERY, id))
+            throw new NotFoundException("Пользователя с id: " + id + " не существует");
+    }
 
     @Override
     public List<User> findFriends(Long id) {
-        return findMany(FIND_FRIENDS_QUERY, id, id);
+        List<User> users = findMany(UserSQL.FIND_FRIENDS_QUERY, id);
+        users.forEach(u -> u.setFriends(
+                        findFriends(u.getId()).stream()
+                                .map(User::getId)
+                                .collect(Collectors.toSet())
+                )
+        );
+        return users;
     }
 
     @Override
-    public boolean containsUser(Long id) {
-        return findById(id) != null;
+    public boolean addFriend(Long userId, Long friendId) {
+        System.out.println("storage");
+        jdbc.update(UserSQL.INSERT_FRIEND_QUERY, userId, friendId);
+        return true;
     }
 
     @Override
-    public void deleteUser(Long id) {
-        if (!delete(DELETE_QUERY, id))
-            throw new NotFoundException("Пользователя с id: " + id + " не существует");
+    public boolean removeFriend(Long id, Long friendId) {
+        System.out.println("storage");
+        return delete(UserSQL.DELETE_FRIEND_QUERY, id, friendId);
     }
 
     @Override

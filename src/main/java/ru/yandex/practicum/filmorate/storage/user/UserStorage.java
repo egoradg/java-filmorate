@@ -20,4 +20,8 @@ public interface UserStorage {
     User updateUser(final User newUser);
 
     void clear();
+
+    boolean addFriend(Long id, Long friendId);
+
+    boolean removeFriend(Long id, Long friendId);
 }

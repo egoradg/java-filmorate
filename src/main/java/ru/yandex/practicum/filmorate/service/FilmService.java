@@ -32,10 +32,7 @@ public class FilmService {
     }
 
     public Film findById(Long id) {
-        if (storage.containsFilm(id))
-            return storage.findById(id);
-        printNotFoundException("Фильма с id = " + id + " нет");
-        return null;
+        return storage.findById(id);
     }
 
     public Film addFilm(NewFilmRequest request) {
@@ -48,9 +45,6 @@ public class FilmService {
         Film film = FilmMapper.mapToFilm(request);
         film = storage.addFilm(film);
         log.info("Добавлен новый фильм");
-        if (!storage.containsFilm(film.getId())) {
-            printNotFoundException("Фильма с id = " + film.getId() + " нет");
-        } else System.out.println("Фильм с id = " + film.getId() + " есть");
         return film;
     }
 
@@ -59,9 +53,8 @@ public class FilmService {
         if (id == null) {
             printException("Id не может быть пустым");
         }
-        if (!storage.containsFilm(id)) {
-            printNotFoundException("Фильма с id = " + id + " нет");
-        }
+
+        storage.containsFilm(id);
 
         Film updatedFilm = FilmMapper.updateFilmFields(storage.findById(id), request);
         updatedFilm = storage.updateFilm(updatedFilm);
@@ -89,12 +82,9 @@ public class FilmService {
     }
 
     public void likeFilm(Long id, Long userId) {
-        if (!storage.containsFilm(id)) {
-            printNotFoundException("Фильма с id = " + id + " нет");
-        }
+        storage.containsFilm(id);
 
-        if (!userStorage.containsUser(userId))
-            printNotFoundException("Пользователя с id = " + id + " нет");
+        userStorage.containsUser(userId);
 
         Film film = storage.findById(id);
         Long likes = storage.addLike(id, userId);
@@ -106,11 +96,8 @@ public class FilmService {
     }
 
     public void deleteLike(Long id, Long userId) {
-        if (!storage.containsFilm(id))
-            printNotFoundException("Фильма с id = " + id + " нет");
-
-        if (!userStorage.containsUser(userId))
-            printNotFoundException("Пользователя с id = " + id + " нет");
+        storage.containsFilm(id);
+        userStorage.containsUser(userId);
 
         Film film = storage.findById(id);
         Long likes = storage.deleteLike(id, userId);

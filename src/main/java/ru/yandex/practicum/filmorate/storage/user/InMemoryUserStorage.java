@@ -70,6 +70,16 @@ public class InMemoryUserStorage implements UserStorage {
         users.clear();
     }
 
+    @Override
+    public boolean addFriend(Long id, Long friendId) {
+        return false;
+    }
+
+    @Override
+    public boolean removeFriend(Long id, Long friendId) {
+        return false;
+    }
+
     private Long getNextId() {
         long currentMaxId = users.keySet()
                 .stream()
@@ -78,6 +88,4 @@ public class InMemoryUserStorage implements UserStorage {
                 .orElse(0);
         return ++currentMaxId;
     }
-
-
 }

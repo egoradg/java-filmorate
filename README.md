@@ -50,7 +50,6 @@ indexes {
     }
 }
 
-// Лайки (many-to-many между users и films)
 Table likes {
 film_id integer [not null]
 user_id integer [not null]
@@ -60,11 +59,10 @@ indexes {
     }
 }
 
-// Друзья (many-to-many между users)
 Table friends {
 user1_id integer [not null]
 user2_id integer [not null]
-status integer [not null, default: 'unconfirmed']
+status integer [ default: 'неподтверждённая', not null]
 
 indexes {
     (user1_id, user2_id) [pk]
@@ -80,7 +78,26 @@ Ref: friends.user1_id > users.id
 Ref: friends.user2_id > users.id
 Ref: friends.status > friends_status.id
 ```
+```
+INSERT INTO GENRE (name) VALUES
+('Комедия'),
+('Драма'),
+('Мультфильм'),
+('Триллер'),
+('Документальный'),
+('Боевик');
 
+INSERT INTO RATINGMPA (name) VALUES
+('0+'),
+('6+'),
+('12+'),
+('16+'),
+('18+');
+
+INSERT INTO FRIENDS_STATUS (name) VALUES
+('неподтверждённая'),
+('подтверждённая');
+```
 ## Операции с базой данных
 
 ## Фильмы

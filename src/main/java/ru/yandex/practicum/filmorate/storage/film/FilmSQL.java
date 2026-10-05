@@ -8,7 +8,8 @@ public class FilmSQL {
                    f.release_date,
                    f.duration,
                    COUNT(l.user_id) AS likes,
-                   r.id AS rating_id
+                   r.id AS rating_id,
+                   r.name AS mpa_name
             FROM films f
             LEFT JOIN likes l ON f.id = l.film_id
             JOIN ratingMPA r ON f.rating_id = r.id
@@ -21,7 +22,8 @@ public class FilmSQL {
                    f.release_date,
                    f.duration,
                    COUNT(l.user_id) AS likes,
-                   r.id AS rating_id
+                   r.id AS rating_id,
+                   r.name AS mpa_name
             FROM films f
             LEFT JOIN likes l ON f.id = l.film_id
             JOIN ratingMPA r ON f.rating_id = r.id
@@ -41,7 +43,8 @@ public class FilmSQL {
                    f.release_date,
                    f.duration,
                    COUNT(l.user_id) AS likes,
-                   r.id AS rating_id
+                   r.id AS rating_id,
+                   r.name AS mpa_name
             FROM films f
             LEFT JOIN likes l ON f.id = l.film_id
             LEFT JOIN ratingMPA r ON f.rating_id = r.id

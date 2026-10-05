@@ -32,7 +32,7 @@ public class Film {
 
     private Long likes;
 
-    private List<Id> genre;
+    private List<Genre> genre;
 
-    private Id rating;
+    private Mpa rating;
 }

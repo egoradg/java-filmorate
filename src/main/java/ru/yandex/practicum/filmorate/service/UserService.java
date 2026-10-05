@@ -9,14 +9,11 @@ import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
-import ru.yandex.practicum.filmorate.model.Friend;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.model.enums.FriendsStatus;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -65,51 +62,9 @@ public class UserService {
         User updatedUser = UserMapper.updateUserFields(storage.findById(request.getId()), request);
         updatedUser = storage.updateUser(updatedUser);
         log.info("Данные пользователя успешно изменены");
-        System.out.println(updatedUser);
         return UserMapper.mapToUserDto(updatedUser);
     }
 
-    public void addFriend(Long id, Long friendId) {
-        log.info("Попытка добавить друга");
-        if (id == friendId) {
-            printException("Нельзя добавить себя в друзья");
-        }
-        checkContainsUser(id);
-        checkContainsUser(friendId);
-
-        User user = storage.findById(id);
-        User userFriend = storage.findById(friendId);
-        Friend friend1 = new Friend(userFriend.getId(), FriendsStatus.UNCONFIRMED);
-        Friend friend2 = new Friend(user.getId(), FriendsStatus.UNCONFIRMED);
-        if (user.getFriends().add(friend1) && userFriend.getFriends().add(friend2)) {
-            log.info("Друг успешно добавлен");
-        } else {
-            printException("Вы уже являетесь друзьями");
-        }
-    }
-
-    public void deleteFriend(Long id, Long friendId) {
-        checkContainsUser(id);
-        checkContainsUser(friendId);
-
-        User user = storage.findById(id);
-        Friend friend1 = user.getFriends().stream()
-                .filter(friend -> friend.getFriendId() == friendId)
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException("Вы и так не были друзьями"));
-
-        User friend = storage.findById(friendId);
-        Friend friend2 = user.getFriends().stream()
-                .filter(fr -> fr.getFriendId() == id)
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException("Вы и так не были друзьями"));
-
-        if (user.getFriends().remove(friend1) && friend.getFriends().remove(friend2)) {
-            log.info("Пользователь удалён из друзей");
-        } else {
-            log.warn("Вы и так не были друзьями");
-        }
-    }
 
     public void deleteUser(Long id) {
         checkContainsUser(id);
@@ -127,10 +82,7 @@ public class UserService {
     }
 
     private void checkContainsUser(Long id) throws NotFoundException {
-        if (!storage.containsUser(id)) {
-            log.warn("Пользователя с id = " + id + " нет");
-            throw new NotFoundException("Пользователя с id = " + id + " нет");
-        }
+        storage.containsUser(id);
     }
 
     public List<UserDto> findFriends(Long id) {
@@ -148,12 +100,8 @@ public class UserService {
         User user1 = storage.findById(id);
         User user2 = storage.findById(otherId);
         return getCommonIds(
-                user1.getFriends().stream()
-                        .map(Friend::getFriendId)
-                        .collect(Collectors.toSet()),
-                user2.getFriends().stream()
-                        .map(Friend::getFriendId)
-                        .collect(Collectors.toSet())
+                user1.getFriends(),
+                user2.getFriends()
         ).stream()
                 .map(storage::findById)
                 .map(UserMapper::mapToUserDto)
@@ -164,5 +112,33 @@ public class UserService {
         return friends1.stream()
                 .filter(friends2::contains)
                 .toList();
+    }
+
+    public void addFriend(Long id, Long friendId) {
+        log.info("Попытка добавить друга");
+        if (id == friendId) {
+            printException("Нельзя добавить себя в друзья");
+        }
+        checkContainsUser(id);
+        checkContainsUser(friendId);
+        User user = storage.findById(id);
+        if (user.getFriends().add(friendId) && storage.addFriend(id, friendId)) {
+            log.info("Друг успешно добавлен");
+        } else {
+            printException("Вы уже являетесь друзьями");
+        }
+    }
+
+    public void deleteFriend(Long id, Long friendId) {
+        checkContainsUser(id);
+        checkContainsUser(friendId);
+
+        User user = storage.findById(id);
+
+        if (user.getFriends().remove(friendId) && storage.removeFriend(id, friendId)) {
+            log.info("Пользователь удалён из друзей");
+        } else {
+            log.warn("Вы и так не были друзьями");
+        }
     }
 }

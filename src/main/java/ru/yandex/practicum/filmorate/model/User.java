@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.model;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
-import ru.yandex.practicum.filmorate.model.enums.FriendsStatus;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -30,7 +29,7 @@ public class User {
     @PastOrPresent(groups = {UserValidationGroups.CreateGroup.class, UserValidationGroups.UpdateGroup.class})
     private LocalDate birthday;
 
-    private Set<Friend> friends;
+    private Set<Long> friends;
 
     @Builder
     public User(Long id, String email, String login, String name, LocalDate birthday) {
