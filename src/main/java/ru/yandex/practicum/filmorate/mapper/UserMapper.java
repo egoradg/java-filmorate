@@ -39,6 +39,9 @@ public class UserMapper {
         if (request.hasName()) {
             user.setName(request.getName());
         }
+        if(request.hasBirthday()){
+            user.setBirthday(request.getBirthday());
+        }
         return user;
     }
 }

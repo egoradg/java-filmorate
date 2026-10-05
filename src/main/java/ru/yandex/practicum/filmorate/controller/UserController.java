@@ -2,13 +2,10 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.NewUserRequest;
 import ru.yandex.practicum.filmorate.dto.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.UserDto;
-import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.model.UserValidationGroups;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.List;
@@ -43,9 +40,9 @@ public class UserController {
         return service.addUser(request);
     }
 
-    @PutMapping("/{id}")
-    public UserDto updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest request) {
-        return service.updateUser(id, request);
+    @PutMapping//("/{id}")
+    public UserDto updateUser(/*@PathVariable Long id, */@Valid @RequestBody UpdateUserRequest request) {
+        return service.updateUser(request);
     }
 
     @GetMapping("/{id}/friends")

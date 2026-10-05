@@ -3,13 +3,12 @@ package ru.yandex.practicum.filmorate.storage.user;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.BaseRepository;
 
-import java.sql.Timestamp;
 import java.util.List;
+
 // для входа в консоль http://localhost:8080/h2-console
 @Repository("userDb")
 public class UserDbStorage extends BaseRepository<User> implements UserStorage {
@@ -21,22 +20,22 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage {
     private static final String DELETE_QUERY = "DELETE FROM users WHERE id = ?";
     private static final String FIND_FRIENDS_QUERY =
             "SELECT " +
-            "u.id, " +
-            "u.email, " +
-            "u.login, " +
-            "u.name, " +
-            "u.birthday " +
-            "FROM users u " +
-            "WHERE u.id IN(" +
-            "    SELECT user2_id" +
-            "    FROM users" +
-            "    WHERE user1_id=(id)" +
-            "    )" +
-            "OR u.id IN(" +
-            "    SELECT user1_id" +
-            "    FROM users" +
-            "    WHERE user2_id=(id)" +
-            "    )";
+                    "u.id, " +
+                    "u.email, " +
+                    "u.login, " +
+                    "u.name, " +
+                    "u.birthday " +
+                    "FROM users u " +
+                    "WHERE u.id IN(" +
+                    "    SELECT user2_id" +
+                    "    FROM friends" +
+                    "    WHERE user1_id= ?" +
+                    "    )" +
+                    "OR u.id IN(" +
+                    "    SELECT user1_id" +
+                    "    FROM friends" +
+                    "    WHERE user2_id=?" +
+                    "    )";
 
 
     public UserDbStorage(JdbcTemplate jdbc, RowMapper<User> mapper) {
@@ -51,8 +50,9 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage {
     @Override
     public User findById(Long userId) {
         return findOne(FIND_BY_ID_QUERY, userId)
-                .orElseThrow(()->new InternalServerException("Пользователь с id: "+userId + " не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь с id: " + userId + " не найден"));
     }
+
     @Override
     public User addUser(User user) {
         long id = insert(
@@ -62,7 +62,6 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage {
                 user.getName(),
                 user.getBirthday()
         );
-        System.out.println(id);
         user.setId(id);
         return user;
     }
@@ -82,17 +81,17 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage {
 
     @Override
     public List<User> findFriends(Long id) {
-        return findMany(FIND_FRIENDS_QUERY, id);
+        return findMany(FIND_FRIENDS_QUERY, id, id);
     }
 
     @Override
     public boolean containsUser(Long id) {
-        return findById(id)!=null;
+        return findById(id) != null;
     }
 
     @Override
     public void deleteUser(Long id) {
-        if(!delete(DELETE_QUERY, id))
+        if (!delete(DELETE_QUERY, id))
             throw new NotFoundException("Пользователя с id: " + id + " не существует");
     }
 

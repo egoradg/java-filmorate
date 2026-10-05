@@ -46,6 +46,7 @@ public class UserService {
         if (request.getName() == null || request.getName().isEmpty()) {
             request.setName(request.getLogin());
         }
+
         User user = UserMapper.mapToUser(request);
         user = storage.addUser(user);
         log.info("Добавлен новый пользователь");
@@ -53,17 +54,18 @@ public class UserService {
         return UserMapper.mapToUserDto(user);
     }
 
-    public UserDto updateUser(Long id, UpdateUserRequest request) {
+    public UserDto updateUser(UpdateUserRequest request) {
         log.info("Попытка изменить пользователя");
-        checkContainsUser(id);
+        checkContainsUser(request.getId());
 
         if (request.getLogin() != null && request.getLogin().contains(" ")) {
             printException("Логин не может содержать пробелы");
         }
 
-        User updatedUser = UserMapper.updateUserFields(storage.findById(id), request);
+        User updatedUser = UserMapper.updateUserFields(storage.findById(request.getId()), request);
         updatedUser = storage.updateUser(updatedUser);
         log.info("Данные пользователя успешно изменены");
+        System.out.println(updatedUser);
         return UserMapper.mapToUserDto(updatedUser);
     }
 
