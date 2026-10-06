@@ -27,9 +27,7 @@ CREATE TABLE IF NOT EXISTS films (
     description VARCHAR(200) NOT NULL,
     release_date DATE NOT NULL,
     duration INTEGER NOT NULL,
-    --genre_id INTEGER NOT NULL,
     rating_id INTEGER NOT NULL,
-    CONSTRAINT fk_films_genre FOREIGN KEY (genre_id) REFERENCES genre (id),
     CONSTRAINT fk_films_rating FOREIGN KEY (rating_id) REFERENCES ratingMPA (id)
 );
 
