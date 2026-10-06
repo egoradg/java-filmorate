@@ -7,11 +7,11 @@ MERGE INTO GENRE (id, name) KEY (name) VALUES
  (6, 'Боевик');
 
 MERGE INTO RATINGMPA (id, name) VALUES
- (1, '0+'),
- (2, '6+'),
- (3, '12+'),
- (4, '16+'),
- (5, '18+');
+ (1, 'G'),
+ (2, 'PG'),
+ (3, 'PG-13'),
+ (4, 'R'),
+ (5, 'NC-17');
 
 MERGE INTO FRIENDS_STATUS (id, name) VALUES
  (1, 'неподтверждённая'),
