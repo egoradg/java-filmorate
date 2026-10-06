@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS films (
     description VARCHAR(200) NOT NULL,
     release_date DATE NOT NULL,
     duration INTEGER NOT NULL,
-    rating_id INTEGER NOT NULL,
+    rating_id INTEGER,
     CONSTRAINT fk_films_rating FOREIGN KEY (rating_id) REFERENCES ratingMPA (id)
 );
 
@@ -56,44 +56,3 @@ CREATE TABLE IF NOT EXISTS friends (
     CONSTRAINT fk_friends_user2 FOREIGN KEY (user2_id) REFERENCES users (id) ON DELETE CASCADE,
     CONSTRAINT fk_friends_status FOREIGN KEY (status) REFERENCES friends_status (id)
 );
-
-DELETE FROM FILMS;
-ALTER TABLE FILMS ALTER COLUMN id RESTART WITH 1;
-
-DELETE FROM FILM_GENRE;
-
-DELETE FROM FRIENDS;
-
-DELETE FROM FRIENDS_STATUS ;
-ALTER TABLE FRIENDS_STATUS ALTER COLUMN id RESTART WITH 1;
-
-DELETE FROM GENRE ;
-ALTER TABLE GENRE ALTER COLUMN id RESTART WITH 1;
-
-DELETE FROM LIKES;
-
-DELETE FROM RATINGMPA ;
-ALTER TABLE RATINGMPA ALTER COLUMN id RESTART WITH 1;
-
-DELETE FROM USERS ;
-ALTER TABLE USERS ALTER COLUMN id RESTART WITH 1;
-
-
-INSERT INTO GENRE (name) VALUES
- ('Комедия'),
- ('Драма'),
- ('Мультфильм'),
- ('Триллер'),
- ('Документальный'),
- ('Боевик');
-
-INSERT INTO RATINGMPA (name) VALUES
- ('0+'),
- ('6+'),
- ('12+'),
- ('16+'),
- ('18+');
-
-INSERT INTO FRIENDS_STATUS (name) VALUES
- ('неподтверждённая'),
- ('подтверждённая');

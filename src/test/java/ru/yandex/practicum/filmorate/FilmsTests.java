@@ -217,7 +217,6 @@ public class FilmsTests {
 
         HttpResponse<String> resp1 =
                 client.send(req1, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
-        System.out.println(resp1.body());
         return gson.fromJson(resp1.body(), new ListOfFilmsTypeToken().getType());
     }
 
