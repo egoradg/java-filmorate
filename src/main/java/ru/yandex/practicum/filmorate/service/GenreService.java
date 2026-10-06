@@ -25,7 +25,7 @@ public class GenreService {
         return storage.getGenre(id);
     }
 
-    public void clear(){
+    public void clear() {
         storage.clear();
     }
 }
