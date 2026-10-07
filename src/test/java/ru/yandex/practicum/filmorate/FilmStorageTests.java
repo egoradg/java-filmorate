@@ -55,9 +55,9 @@ public class FilmStorageTests {
     @Test
     public void testFindFilms() {
 
-        List<Film> Films = storage.findAll();
+        List<Film> films = storage.findAll();
 
-        assertTrue(Films.isEmpty());
+        assertTrue(films.isEmpty());
     }
 
     @Test
