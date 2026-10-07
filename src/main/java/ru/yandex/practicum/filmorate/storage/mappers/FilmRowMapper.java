@@ -21,7 +21,7 @@ public class FilmRowMapper implements RowMapper<Film> {
                 .likes(resultSet.getLong("likes"))
                 .build();
         long ratingId = resultSet.getLong("rating_id");
-        if(ratingId==0L)
+        if (ratingId == 0L)
             film.setRating(null);
         else
             film.setRating(new Mpa(resultSet.getLong("rating_id"), resultSet.getString("mpa_name")));
