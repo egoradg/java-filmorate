@@ -5,7 +5,7 @@ public class UserSQL {
     public static final String FIND_BY_ID_QUERY = "SELECT * FROM users WHERE id = ?";
     public static final String INSERT_QUERY = "INSERT INTO users (email, login, name, birthday)" +
             "VALUES (?, ?, ?, ?)";
-    public static final String UPDATE_QUERY = "UPDATE users SET email = ?, login = ?, name = ? WHERE id = ?";
+    public static final String UPDATE_QUERY = "UPDATE users SET email = ?, login = ?, name = ?, birthday = ? WHERE id = ?";
     public static final String DELETE_QUERY = "DELETE FROM users WHERE id = ?";
     public static final String FIND_FRIENDS_QUERY = """
             SELECT * FROM users
