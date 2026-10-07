@@ -2,7 +2,10 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
+import ru.yandex.practicum.filmorate.dto.NewFilmRequest;
+import ru.yandex.practicum.filmorate.dto.UpdateFilmRequest;
+import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.List;
@@ -17,23 +20,25 @@ public class FilmController {
     }
 
     @GetMapping
-    public List<Film> findAll() {
-        return service.findAll();
+    public List<FilmDto> findAll() {
+        return service.findAll().stream()
+                .map(FilmMapper::mapToFilmDto)
+                .toList();
     }
 
     @GetMapping("/{id}")
-    public Film findById(@PathVariable Long id) {
-        return service.findById(id);
+    public FilmDto findById(@PathVariable Long id) {
+        return FilmMapper.mapToFilmDto(service.findById(id));
     }
 
     @PostMapping
-    public Film addFilm(@Valid @RequestBody Film film) {
-        return service.addFilm(film);
+    public FilmDto addFilm(@Valid @RequestBody NewFilmRequest request) {
+        return FilmMapper.mapToFilmDto(service.addFilm(request));
     }
 
     @PutMapping
-    public Film updateFilm(@RequestBody Film newFilm) {
-        return service.updateFilm(newFilm);
+    public FilmDto updateFilm(@RequestBody UpdateFilmRequest request) {
+        return FilmMapper.mapToFilmDto(service.updateFilm(request.getId(), request));
     }
 
     @DeleteMapping("/{id}")
@@ -52,8 +57,10 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> getPopularFilms(@RequestParam(required = false) Long count) {
-        return service.getPopularFilms(count);
+    public List<FilmDto> getPopularFilms(@RequestParam(required = false) Long count) {
+        return service.getPopularFilms(count).stream()
+                .map(FilmMapper::mapToFilmDto)
+                .toList();
     }
 
     public void clear() {

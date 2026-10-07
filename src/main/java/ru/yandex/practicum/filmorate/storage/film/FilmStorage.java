@@ -5,7 +5,6 @@ import ru.yandex.practicum.filmorate.model.Film;
 import java.util.List;
 
 public interface FilmStorage {
-    Film getFilm(Long id);
 
     List<Film> findAll();
 
@@ -13,7 +12,7 @@ public interface FilmStorage {
 
     boolean containsFilm(final Long id);
 
-    void addFilm(final Film film);
+    Film addFilm(final Film film);
 
     void deleteFilm(final Long id);
 
@@ -22,4 +21,8 @@ public interface FilmStorage {
     List<Film> getPopularFilms(Long count);
 
     void clear();
+
+    Long addLike(long filmId, long userId);
+
+    Long deleteLike(long filmId, long userId);
 }

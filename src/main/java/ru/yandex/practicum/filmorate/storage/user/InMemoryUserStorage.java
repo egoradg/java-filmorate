@@ -7,8 +7,10 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-@Component
+@Component("memoryUser")
 public class InMemoryUserStorage implements UserStorage {
     private final Map<Long, User> users = new HashMap<>();
 
@@ -28,9 +30,9 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void addUser(User user) {
+    public User addUser(User user) {
         user.setId(getNextId());
-        users.put(user.getId(), user);
+        return users.put(user.getId(), user);
     }
 
     @Override
@@ -52,12 +54,13 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public List<User> findFriends(Long id) {
+    public Set<Long> findFriends(Long id) {
         return users.get(id)
                 .getFriends()
                 .stream()
                 .map(users::get)
-                .toList();
+                .map(User::getId)
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -70,6 +73,16 @@ public class InMemoryUserStorage implements UserStorage {
         users.clear();
     }
 
+    @Override
+    public boolean addFriend(Long id, Long friendId) {
+        return false;
+    }
+
+    @Override
+    public boolean removeFriend(Long id, Long friendId) {
+        return false;
+    }
+
     private Long getNextId() {
         long currentMaxId = users.keySet()
                 .stream()
@@ -78,6 +91,4 @@ public class InMemoryUserStorage implements UserStorage {
                 .orElse(0);
         return ++currentMaxId;
     }
-
-
 }

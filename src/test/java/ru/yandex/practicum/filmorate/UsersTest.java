@@ -181,8 +181,8 @@ public class UsersTest {
 
         user = User.builder()
                 .id(2L)
-                .email("qwe@asd.ru")
-                .login("qwerty")
+                .email("asd@asd.ru")
+                .login("asdrty")
                 .name(null)
                 .birthday(LocalDate.of(2000, 1, 1))
                 .build();

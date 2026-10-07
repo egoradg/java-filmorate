@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.model;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
-import ru.yandex.practicum.filmorate.model.enums.FriendsStatus;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -32,16 +31,13 @@ public class User {
 
     private Set<Long> friends;
 
-    private FriendsStatus friendsStatus;
-
     @Builder
-    public User(Long id, String email, String login, String name, LocalDate birthday, FriendsStatus friendsStatus) {
+    public User(Long id, String email, String login, String name, LocalDate birthday) {
         this.id = id;
         this.email = email;
         this.login = login;
         this.name = name;
         this.birthday = birthday;
         this.friends = new HashSet<>();
-        this.friendsStatus = friendsStatus;
     }
 }

@@ -7,14 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Component
+@Component("memoryFilm")
 public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Long, Film> films = new HashMap<>();
-
-    @Override
-    public Film getFilm(Long id) {
-        return films.get(id);
-    }
 
     public List<Film> findAll() {
         return films.values().stream().toList();
@@ -36,9 +31,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void addFilm(Film film) {
+    public Film addFilm(Film film) {
         film.setId(getNextId());
-        films.put(film.getId(), film);
+        return films.put(film.getId(), film);
     }
 
     @Override
@@ -70,9 +65,9 @@ public class InMemoryFilmStorage implements FilmStorage {
             count = (long) films.size();
         return films.values().stream()
                 .sorted((o1, o2) -> {
-                    if (o1.getLikes().size() == o2.getLikes().size())
+                    if (o1.getLikes() == o2.getLikes())
                         return 0;
-                    return o1.getLikes().size() > o2.getLikes().size() ? -1 : 1;
+                    return o1.getLikes() > o2.getLikes() ? -1 : 1;
                 })
                 .limit(count)
                 .toList();
@@ -85,5 +80,15 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .max()
                 .orElse(0);
         return ++currentMaxId;
+    }
+
+    @Override
+    public Long addLike(long filmId, long userId) {
+        return null;
+    }
+
+    @Override
+    public Long deleteLike(long filmId, long userId) {
+        return null;
     }
 }
