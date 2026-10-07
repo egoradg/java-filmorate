@@ -88,7 +88,9 @@ public class UserService {
     public List<UserDto> findFriends(Long id) {
         checkContainsUser(id);
         log.info("Попытка найти друзей");
-        return storage.findFriends(id).stream().map(UserMapper::mapToUserDto).toList();
+        return storage.findFriends(id).stream()
+                .map(this::findById)
+                .toList();
     }
 
     public List<UserDto> findCommonFriends(Long id, Long otherId) {

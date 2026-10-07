@@ -7,6 +7,8 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component("memoryUser")
 public class InMemoryUserStorage implements UserStorage {
@@ -52,12 +54,13 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public List<User> findFriends(Long id) {
+    public Set<Long> findFriends(Long id) {
         return users.get(id)
                 .getFriends()
                 .stream()
                 .map(users::get)
-                .toList();
+                .map(User::getId)
+                .collect(Collectors.toSet());
     }
 
     @Override

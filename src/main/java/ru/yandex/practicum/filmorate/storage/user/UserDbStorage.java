@@ -7,8 +7,9 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.BaseRepository;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 // для входа в консоль http://localhost:8080/h2-console
 @Repository("userDb")
@@ -22,11 +23,11 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage {
     public List<User> findAll() {
         List<User> users = findMany(UserSQL.FIND_ALL_QUERY);
         users.forEach(u -> u.setFriends(
-                        findFriends(u.getId()).stream()
+                findFriends(u.getId())));/*.stream()
                                 .map(User::getId)
                                 .collect(Collectors.toSet())
                 )
-        );
+        );*/
         return users;
     }
 
@@ -34,9 +35,9 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage {
     public User findById(Long userId) {
         User user = findOne(UserSQL.FIND_BY_ID_QUERY, userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id: " + userId + " не найден"));
-        user.setFriends(findFriends(user.getId()).stream()
+        user.setFriends(findFriends(user.getId()));/*.stream()
                 .map(User::getId)
-                .collect(Collectors.toSet()));
+                .collect(Collectors.toSet()));*/
         return user;
     }
 
@@ -79,15 +80,10 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage {
     }
 
     @Override
-    public List<User> findFriends(Long id) {
-        List<User> users = findMany(UserSQL.FIND_FRIENDS_QUERY, id);
-        users.forEach(u -> u.setFriends(
-                        findFriends(u.getId()).stream()
-                                .map(User::getId)
-                                .collect(Collectors.toSet())
-                )
-        );
-        return users;
+    public Set<Long> findFriends(Long id) {
+        List<Long> users = jdbc.queryForList(UserSQL.FIND_Id_FRIENDS_QUERY, Long.class, id);
+
+        return new HashSet<>(users);
     }
 
     @Override

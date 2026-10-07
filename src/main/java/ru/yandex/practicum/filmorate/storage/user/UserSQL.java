@@ -7,30 +7,10 @@ public class UserSQL {
             "VALUES (?, ?, ?, ?)";
     public static final String UPDATE_QUERY = "UPDATE users SET email = ?, login = ?, name = ?, birthday = ? WHERE id = ?";
     public static final String DELETE_QUERY = "DELETE FROM users WHERE id = ?";
-    public static final String FIND_FRIENDS_QUERY = """
-            SELECT * FROM users
-            WHERE id IN(
+    public static final String FIND_Id_FRIENDS_QUERY = """
                 SELECT user2_id
                 FROM friends
                 WHERE user1_id = ?
-                )
-            """;
-    public static final String FIND_COMMONS_FRIENDS_QUERY = """
-            SELECT * FROM users
-            WHERE
-            -- Получение списка id друзей 1 пользователя
-            id IN(
-                SELECT user2_id
-                FROM users
-                WHERE user1_id = ? --id1
-                )
-            AND
-            -- Получение списка id друзей 2 пользователя
-            id IN(
-                SELECT user2_id
-                FROM users
-                WHERE user1_id = ? --id2
-                )
             """;
     public static final String INSERT_FRIEND_QUERY = "INSERT INTO friends (user1_id, user2_id)" +
             "VALUES (?, ?)";

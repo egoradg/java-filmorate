@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -25,7 +26,7 @@ class UserStorageTests {
     private final UserDbStorage storage;
 
     @BeforeEach
-    public void beforeEach(){
+    public void beforeEach() {
         storage.clear();
     }
 
@@ -148,11 +149,11 @@ class UserStorageTests {
         storage.addFriend(user1.getId(), user2.getId());
         storage.addFriend(user1.getId(), user3.getId());
 
-        List<User> friends = storage.findFriends(user1.getId());
+        Set<Long> friends = storage.findFriends(user1.getId());
 
         assertEquals(2, friends.size());
-        assertTrue(friends.contains(user2));
-        assertTrue(friends.contains(user3));
+        assertTrue(friends.contains(user2.getId()));
+        assertTrue(friends.contains(user3.getId()));
 
         friends = storage.findFriends(user2.getId());
         assertEquals(0, friends.size());
@@ -184,10 +185,10 @@ class UserStorageTests {
 
         storage.addFriend(user1.getId(), user2.getId());
 
-        List<User> friends = storage.findFriends(user1.getId());
+        Set<Long> friends = storage.findFriends(user1.getId());
 
         assertEquals(1, friends.size());
-        assertTrue(friends.contains(user2));
+        assertTrue(friends.contains(user2.getId()));
 
         friends = storage.findFriends(user2.getId());
         assertEquals(0, friends.size());
@@ -218,7 +219,7 @@ class UserStorageTests {
 
         storage.removeFriend(user1.getId(), user2.getId());
 
-        List<User> friends = storage.findFriends(user1.getId());
+        Set<Long> friends = storage.findFriends(user1.getId());
         assertEquals(0, friends.size());
 
         friends = storage.findFriends(user2.getId());
