@@ -45,6 +45,12 @@ public class FilmMapper {
         if (request.hasDuration()) {
             film.setDuration(request.getDuration());
         }
+        if (request.hasGenres()) {
+            film.setGenre(request.getGenres());
+        }
+        if (request.hasMpa()) {
+            film.setRating(request.getMpa());
+        }
         return film;
     }
 }

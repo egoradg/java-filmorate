@@ -7,8 +7,11 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Slf4j
@@ -26,6 +29,10 @@ public class UpdateFilmRequest {
 
     @Positive
     private Long duration;
+
+    private List<Genre> genres;
+
+    private Mpa mpa;
 
     public boolean hasName() {
         return name != null;
@@ -45,5 +52,13 @@ public class UpdateFilmRequest {
 
     public boolean hasDuration() {
         return duration != null;
+    }
+
+    public boolean hasGenres() {
+        return genres != null;
+    }
+
+    public boolean hasMpa() {
+        return mpa != null;
     }
 }
